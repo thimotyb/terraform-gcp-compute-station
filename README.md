@@ -172,13 +172,52 @@ docker compose version
 docker run hello-world
 ```
 
-### 3. Check Startup Script Logs
+### 3. Configure Git Authentication
+
+The VM comes with **Git Credential Manager** and **GitHub CLI** pre-installed.
+
+#### Option A: Using GitHub CLI (Recommended)
+
+```bash
+# Authenticate with GitHub using device flow
+gh auth login
+
+# Follow the prompts:
+# - Select GitHub.com
+# - Select HTTPS
+# - Authenticate Git with your GitHub credentials: Yes
+# - Login with a web browser
+# - Copy the one-time code and open the URL in your browser
+```
+
+#### Option B: Using Git Credential Manager
+
+```bash
+# GCM is already configured. On first git operation, you'll get a device code
+git clone https://github.com/yourusername/yourrepo.git
+
+# Follow the URL and enter the code shown
+```
+
+#### Option C: SSH Keys
+
+```bash
+# Generate SSH key
+ssh-keygen -t ed25519 -C "your@email.com"
+
+# Copy public key
+cat ~/.ssh/id_ed25519.pub
+
+# Add to GitHub: https://github.com/settings/keys
+```
+
+### 4. Check Startup Script Logs
 
 ```bash
 cat /var/log/startup-script.log
 ```
 
-### 4. Update System (Optional)
+### 5. Update System (Optional)
 
 ```bash
 sudo apt update

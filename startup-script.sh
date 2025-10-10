@@ -217,6 +217,42 @@ apt-get install -y code
 echo "Visual Studio Code installed successfully"
 
 #######################################
+# Install Git Credential Manager
+#######################################
+echo "Installing Git Credential Manager..."
+
+# Download latest Git Credential Manager
+GCM_VERSION="2.6.0"
+wget -q https://github.com/git-ecosystem/git-credential-manager/releases/download/v${GCM_VERSION}/gcm-linux_amd64.${GCM_VERSION}.deb -O /tmp/gcm-linux.deb
+
+# Install GCM
+apt-get install -y /tmp/gcm-linux.deb
+
+# Configure Git to use GCM globally
+git-credential-manager configure
+
+# Clean up
+rm /tmp/gcm-linux.deb
+
+echo "Git Credential Manager installed successfully"
+
+#######################################
+# Install GitHub CLI
+#######################################
+echo "Installing GitHub CLI..."
+
+# Add GitHub CLI GPG key and repository
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list
+
+# Update and install GitHub CLI
+apt-get update
+apt-get install -y gh
+
+echo "GitHub CLI installed successfully"
+
+#######################################
 # Cleanup
 #######################################
 echo "Cleaning up..."
@@ -238,6 +274,8 @@ echo "- Xfce Desktop Environment"
 echo "- XRDP Server"
 echo "- Google Chrome: $(google-chrome --version)"
 echo "- Visual Studio Code: $(code --version | head -n1)"
+echo "- Git Credential Manager: $(git-credential-manager --version)"
+echo "- GitHub CLI: $(gh --version | head -n1)"
 echo ""
 echo "Default user: ubuntu"
 echo "Default password: ChangeMe123! (CHANGE THIS!)"
