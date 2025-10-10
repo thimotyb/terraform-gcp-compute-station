@@ -1,0 +1,1 @@
+gcloud compute instances start ubuntu-workstation --zone=europe-west4-a
