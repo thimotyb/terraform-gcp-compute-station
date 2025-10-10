@@ -277,12 +277,37 @@ sudo apt update
 sudo apt upgrade -y
 ```
 
-## 💰 Cost Optimization
+## 💰 Cost Breakdown and Optimization
 
-Current configuration uses `e2-highmem-4`:
+### Current Configuration (e2-highmem-4 + 400GB disk)
+
+**When VM is RUNNING (24/7):**
+- VM e2-highmem-4: ~$132/month (~$0.183/hour)
+- Disk (400GB pd-standard): ~$16/month
+- **Total: ~$148/month**
+
+**When VM is STOPPED:**
+- VM: $0 (no charge when stopped)
+- Disk (400GB pd-standard): ~$16/month
+- **Total: ~$16/month** ⭐
+
+### Real-World Cost Examples
+
+| Usage Pattern | Hours/Month | VM Cost | Disk Cost | **Total/Month** | Savings vs 24/7 |
+|--------------|-------------|---------|-----------|-----------------|-----------------|
+| 24/7 (always on) | 720 | $132 | $16 | **$148** | 0% |
+| 14h/day, 7 days | 420 | $77 | $16 | **$93** | 37% |
+| 8h/day, 5 days/week | 160 | $29 | $16 | **$45** | 70% |
+| 4h/day, 5 days/week | 80 | $15 | $16 | **$31** | 79% |
+| Always stopped | 0 | $0 | $16 | **$16** | 89% |
+
+**With auto-shutdown at 22:30:** If you start at 8:00 AM daily (14.5h/day), expect **~$96/month** (35% savings)
+
+### VM Specifications
 - **4 vCPUs**
 - **32 GB RAM**
-- **~$132/month** in europe-west4 region
+- **400 GB SSD** (pd-standard)
+- Region: europe-west4
 
 ### Alternative Machine Types:
 
