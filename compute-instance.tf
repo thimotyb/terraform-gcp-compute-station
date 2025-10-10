@@ -40,8 +40,8 @@ resource "google_compute_instance" "ubuntu_workstation" {
   allow_stopping_for_update = true
 
   # Service account with necessary permissions
+  # Using default compute service account
   service_account {
-    email  = google_service_account.vm_service_account.email
     scopes = ["cloud-platform"]
   }
 
@@ -51,13 +51,6 @@ resource "google_compute_instance" "ubuntu_workstation" {
     environment = "workstation"
     purpose     = "docker-desktop"
   }
-}
-
-# Service Account for the VM
-resource "google_service_account" "vm_service_account" {
-  account_id   = "ubuntu-workstation-sa"
-  display_name = "Ubuntu Workstation Service Account"
-  project      = var.gcp_project
 }
 
 # Firewall rule for RDP access
@@ -93,8 +86,11 @@ resource "google_compute_firewall" "allow_iap" {
 }
 
 # IAM binding to allow IAP tunnel access
-resource "google_project_iam_member" "iap_tunnel_user" {
-  project = var.gcp_project
-  role    = "roles/iap.tunnelResourceAccessor"
-  member  = "user:${var.user_email}" # Replace with your GCP account email
-}
+# Note: This requires iam.serviceAccounts permissions
+# If you get permission errors, add this role manually via GCP Console:
+# IAM & Admin > Add member > your-email@example.com > Role: IAP-secured Tunnel User
+# resource "google_project_iam_member" "iap_tunnel_user" {
+#   project = var.gcp_project
+#   role    = "roles/iap.tunnelResourceAccessor"
+#   member  = "user:${var.user_email}"
+# }
