@@ -37,6 +37,18 @@ terraform apply
 
 The VM creation takes ~5-10 minutes. The startup script installs all software automatically.
 
+**Monitor the startup script progress:**
+
+```bash
+# Follow the installation logs in real-time
+gcloud compute ssh ubuntu-workstation --zone=europe-west4-a --project=cegeka-gcp-awareness --command="sudo tail -f /var/log/startup-script.log"
+
+# Check if the startup script has completed
+gcloud compute ssh ubuntu-workstation --zone=europe-west4-a --project=cegeka-gcp-awareness --command="ls -l /var/log/startup-script-complete"
+```
+
+When you see the file `/var/log/startup-script-complete`, the installation is complete and you can connect via RDP.
+
 ### 4. Get Connection Info
 
 After deployment completes:
