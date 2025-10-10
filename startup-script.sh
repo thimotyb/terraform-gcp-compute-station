@@ -169,7 +169,23 @@ if ! id "ubuntu" &>/dev/null; then
     chown ubuntu:ubuntu /home/ubuntu/.xsession
 
     echo "User 'ubuntu' created with password 'ChangeMe123!' - PLEASE CHANGE THIS PASSWORD"
+else
+    # If user already exists, ensure it's in docker group
+    usermod -aG docker ubuntu 2>/dev/null || true
 fi
+
+# Ensure ubuntu user is in docker group (redundant but safe)
+usermod -aG docker ubuntu 2>/dev/null || true
+
+# Add any OS Login users to docker group automatically
+cat >> /etc/profile.d/docker-group.sh <<'EOF'
+# Automatically add new users to docker group
+if ! groups | grep -q docker; then
+    sudo usermod -aG docker $USER 2>/dev/null || true
+fi
+EOF
+
+chmod +x /etc/profile.d/docker-group.sh
 
 #######################################
 # Additional tools
