@@ -105,6 +105,20 @@ While GCP doesn't have an exact Azure Bastion equivalent, you can use:
 2. **IAP Desktop in browser mode**: Coming soon in future versions
 3. **Third-party solutions**: Guacamole, Apache Guacamole on GCP
 
+### Method 4: SSH Access
+
+Connect via SSH to run commands or troubleshoot:
+
+```bash
+# SSH to the instance
+gcloud compute ssh ubuntu-workstation --zone=europe-west4-a --project=cegeka-gcp-awareness
+
+# SSH with specific user
+gcloud compute ssh ubuntu@ubuntu-workstation --zone=europe-west4-a --project=cegeka-gcp-awareness
+```
+
+**Note:** OS Login is enabled, so gcloud will use your Google identity for SSH authentication.
+
 ## 🔧 Post-Installation Steps
 
 ### 1. Change Default Password (Important!)
