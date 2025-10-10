@@ -119,6 +119,34 @@ gcloud compute ssh ubuntu@ubuntu-workstation --zone=europe-west4-a --project=ceg
 
 **Note:** OS Login is enabled, so gcloud will use your Google identity for SSH authentication.
 
+## 📤 Transferring Files to the VM
+
+### Upload files using gcloud scp
+
+```bash
+# Upload a single file
+gcloud compute scp /path/to/your/file.zip ubuntu-workstation:/home/ubuntu/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+
+# Upload with specific user
+gcloud compute scp /path/to/your/file.zip ubuntu@ubuntu-workstation:/home/ubuntu/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+
+# Upload entire folder (recursive)
+gcloud compute scp --recurse /path/to/folder ubuntu-workstation:/home/ubuntu/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+
+# Upload multiple files
+gcloud compute scp /path/to/*.zip ubuntu-workstation:/home/ubuntu/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+```
+
+### Download files from the VM
+
+```bash
+# Download a file from VM to local machine
+gcloud compute scp ubuntu-workstation:/home/ubuntu/file.zip /local/path/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+
+# Download folder recursively
+gcloud compute scp --recurse ubuntu-workstation:/home/ubuntu/folder /local/path/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+```
+
 ## 🔧 Post-Installation Steps
 
 ### 1. Change Default Password (Important!)
