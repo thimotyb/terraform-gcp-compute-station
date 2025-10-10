@@ -119,6 +119,14 @@ sed -i 's/xserverbpp=24/xserverbpp=128/g' /etc/xrdp/xrdp.ini
 # Add xrdp user to ssl-cert group
 adduser xrdp ssl-cert
 
+# Install PulseAudio module for XRDP (improves audio and clipboard support)
+apt-get install -y pulseaudio
+
+# Configure PulseAudio for XRDP users
+cat > /etc/pulse/default.pa.d/xrdp.pa <<'EOF'
+load-module module-native-protocol-unix auth-anonymous=1 socket=/tmp/pulseaudio-socket
+EOF
+
 # Enable and start XRDP service
 systemctl enable xrdp
 systemctl start xrdp

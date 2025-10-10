@@ -62,9 +62,14 @@ terraform output rdp_connection_info
 ### Method 1: Direct RDP (Simple but less secure)
 
 1. Open **Windows Remote Desktop** (`mstsc.exe`)
-2. Enter the public IP shown in terraform output
-3. Username: `ubuntu`
-4. Password: `ChangeMe123!` (change immediately!)
+2. **Before connecting**, click **Show Options**
+3. Go to **Local Resources** tab
+4. Under **Local devices and resources**, ensure **Clipboard** is checked
+5. Enter the public IP shown in terraform output
+6. Username: `ubuntu`
+7. Password: `ChangeMe123!` (change immediately!)
+
+**Note:** Clipboard sharing (copy/paste) should work automatically. If you have issues, see the Troubleshooting section.
 
 ### Method 2: IAP Tunnel (Recommended - Secure)
 
@@ -372,6 +377,25 @@ sudo tail -f /var/log/xrdp-sesman.log
    ```
 
 3. **Re-login** if you just added user to docker group
+
+### Copy/Paste (Clipboard) not working via RDP
+
+1. **In Windows Remote Desktop Client** (before connecting):
+   - Click **Show Options**
+   - Go to **Local Resources** tab
+   - Ensure **Clipboard** is checked under "Local devices and resources"
+   - Click **Details** and verify "Clipboard" is enabled
+   - Connect to the VM
+
+2. **If still not working**, SSH into the VM and restart XRDP:
+   ```bash
+   gcloud compute ssh ubuntu-workstation --zone=europe-west4-a --project=cegeka-gcp-awareness
+   sudo systemctl restart xrdp
+   ```
+
+3. **Disconnect and reconnect** your RDP session
+
+**Note:** Clipboard support is automatically configured in the startup script via PulseAudio integration.
 
 ## 🗑️ Cleanup
 
