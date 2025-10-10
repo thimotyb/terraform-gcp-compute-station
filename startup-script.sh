@@ -253,6 +253,99 @@ apt-get install -y gh
 echo "GitHub CLI installed successfully"
 
 #######################################
+# Install NVM and Node.js
+#######################################
+echo "Installing NVM and Node.js..."
+
+# Install NVM for all users
+export NVM_DIR="/usr/local/nvm"
+mkdir -p "$NVM_DIR"
+
+# Download and install NVM
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | NVM_DIR="$NVM_DIR" bash
+
+# Load NVM
+export NVM_DIR="/usr/local/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Install latest LTS version of Node.js
+nvm install --lts
+nvm use --lts
+nvm alias default 'lts/*'
+
+# Make NVM available to all users
+cat >> /etc/profile.d/nvm.sh <<'EOF'
+export NVM_DIR="/usr/local/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+EOF
+
+chmod +x /etc/profile.d/nvm.sh
+
+# Add NVM to ubuntu user's profile
+for user_home in /home/*; do
+    if [ -d "$user_home" ]; then
+        username=$(basename "$user_home")
+        cat >> "$user_home/.bashrc" <<'EOF'
+
+# NVM configuration
+export NVM_DIR="/usr/local/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+EOF
+        chown $username:$username "$user_home/.bashrc"
+    fi
+done
+
+echo "NVM and Node.js installed successfully"
+
+#######################################
+# Install SDKMAN
+#######################################
+echo "Installing SDKMAN..."
+
+# Install dependencies for SDKMAN
+apt-get install -y zip unzip curl sed
+
+# Install SDKMAN for ubuntu user
+export SDKMAN_DIR="/usr/local/sdkman"
+curl -s "https://get.sdkman.io" | bash
+
+# Source SDKMAN
+export SDKMAN_DIR="/usr/local/sdkman"
+[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+
+# Make SDKMAN available to all users
+cat >> /etc/profile.d/sdkman.sh <<EOF
+export SDKMAN_DIR="/usr/local/sdkman"
+[[ -s "\$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "\$SDKMAN_DIR/bin/sdkman-init.sh"
+EOF
+
+chmod +x /etc/profile.d/sdkman.sh
+
+# Add SDKMAN to ubuntu user's profile
+for user_home in /home/*; do
+    if [ -d "$user_home" ]; then
+        username=$(basename "$user_home")
+        cat >> "$user_home/.bashrc" <<'EOF'
+
+# SDKMAN configuration
+export SDKMAN_DIR="/usr/local/sdkman"
+[[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
+EOF
+        chown $username:$username "$user_home/.bashrc"
+    fi
+done
+
+# Install latest Java with SDKMAN (optional, comment out if not needed)
+source "$SDKMAN_DIR/bin/sdkman-init.sh"
+sdk install java 21.0.5-tem < /dev/null
+sdk install gradle < /dev/null
+sdk install maven < /dev/null
+
+echo "SDKMAN installed successfully"
+
+#######################################
 # Cleanup
 #######################################
 echo "Cleaning up..."
@@ -276,6 +369,10 @@ echo "- Google Chrome: $(google-chrome --version)"
 echo "- Visual Studio Code: $(code --version | head -n1)"
 echo "- Git Credential Manager: $(git-credential-manager --version)"
 echo "- GitHub CLI: $(gh --version | head -n1)"
+echo "- Node.js: $(source /usr/local/nvm/nvm.sh && node --version) (via NVM)"
+echo "- npm: $(source /usr/local/nvm/nvm.sh && npm --version)"
+echo "- Java: $(source /usr/local/sdkman/bin/sdkman-init.sh && java -version 2>&1 | head -n1)"
+echo "- SDKMAN: $(source /usr/local/sdkman/bin/sdkman-init.sh && sdk version)"
 echo ""
 echo "Default user: ubuntu"
 echo "Default password: ChangeMe123! (CHANGE THIS!)"

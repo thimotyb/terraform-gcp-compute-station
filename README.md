@@ -172,9 +172,14 @@ docker compose version
 docker run hello-world
 ```
 
-### 3. Configure Git Authentication
+### 3. Configure Development Tools
 
-The VM comes with **Git Credential Manager** and **GitHub CLI** pre-installed.
+The VM comes pre-installed with:
+- **Git Credential Manager** and **GitHub CLI** for Git authentication
+- **NVM (Node Version Manager)** with latest Node.js LTS
+- **SDKMAN** with Java 21, Gradle, and Maven
+
+#### Configure Git Authentication
 
 #### Option A: Using GitHub CLI (Recommended)
 
@@ -209,6 +214,54 @@ ssh-keygen -t ed25519 -C "your@email.com"
 cat ~/.ssh/id_ed25519.pub
 
 # Add to GitHub: https://github.com/settings/keys
+```
+
+#### Using NVM (Node Version Manager)
+
+```bash
+# NVM is already configured. Check Node.js version
+node --version
+npm --version
+
+# List available Node versions
+nvm list-remote
+
+# Install a specific Node version
+nvm install 18.20.0
+
+# Switch between versions
+nvm use 18
+nvm use --lts
+
+# Set default version
+nvm alias default 20
+```
+
+#### Using SDKMAN
+
+```bash
+# SDKMAN is already configured. Check installed SDKs
+sdk list
+
+# View installed Java versions
+sdk list java
+
+# Install a different Java version
+sdk install java 17.0.13-tem
+
+# Switch Java versions
+sdk use java 17.0.13-tem
+sdk default java 21.0.5-tem
+
+# Install other tools
+sdk install kotlin
+sdk install scala
+sdk install groovy
+
+# Check current versions
+java -version
+gradle --version
+mvn --version
 ```
 
 ### 4. Check Startup Script Logs
