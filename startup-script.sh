@@ -362,6 +362,23 @@ sdk install maven < /dev/null
 echo "SDKMAN installed successfully"
 
 #######################################
+# Install Claude CLI
+#######################################
+echo "Installing Claude CLI..."
+
+# Install Claude CLI via npm (requires Node.js from NVM)
+export NVM_DIR="/usr/local/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+# Install Claude CLI globally
+npm install -g @anthropic-ai/claude-code
+
+# Verify installation
+claude --version || echo "Claude CLI installed, version check failed (may need API key setup)"
+
+echo "Claude CLI installed successfully"
+
+#######################################
 # Cleanup
 #######################################
 echo "Cleaning up..."
@@ -389,6 +406,7 @@ echo "- Node.js: $(source /usr/local/nvm/nvm.sh && node --version) (via NVM)"
 echo "- npm: $(source /usr/local/nvm/nvm.sh && npm --version)"
 echo "- Java: $(source /usr/local/sdkman/bin/sdkman-init.sh && java -version 2>&1 | head -n1)"
 echo "- SDKMAN: $(source /usr/local/sdkman/bin/sdkman-init.sh && sdk version)"
+echo "- Claude CLI: $(source /usr/local/nvm/nvm.sh && claude --version 2>/dev/null || echo 'installed')"
 echo ""
 echo "Default user: ubuntu"
 echo "Default password: ChangeMe123! (CHANGE THIS!)"
