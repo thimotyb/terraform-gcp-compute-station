@@ -65,6 +65,29 @@ docker compose version
 echo "Docker and Docker Compose installed successfully"
 
 #######################################
+# Install Kubernetes Tooling
+#######################################
+echo "Installing kubectl and Minikube..."
+
+# Add Google Cloud apt repo for kubectl
+curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" \
+  > /etc/apt/sources.list.d/kubernetes.list
+
+apt-get update
+apt-get install -y kubectl
+
+# Install Minikube
+curl -Lo /usr/local/bin/minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+chmod +x /usr/local/bin/minikube
+
+# Quick version checks
+kubectl version --client=true
+minikube version
+
+echo "kubectl and Minikube installed successfully"
+
+#######################################
 # Install Xfce Desktop Environment
 #######################################
 echo "Installing Xfce desktop environment..."
@@ -545,6 +568,8 @@ echo "- npm: $(source /usr/local/nvm/nvm.sh && npm --version)"
 echo "- Java: $(source /usr/local/sdkman/bin/sdkman-init.sh && java -version 2>&1 | head -n1)"
 echo "- SDKMAN: $(source /usr/local/sdkman/bin/sdkman-init.sh && sdk version)"
 echo "- Claude CLI: $(source /usr/local/nvm/nvm.sh && claude --version 2>/dev/null || echo 'installed')"
+echo "- kubectl: $(kubectl version --client --short || echo 'installed')"
+echo "- Minikube: $(minikube version)"
 echo ""
 echo "Default user: ubuntu"
 echo "Default password: ChangeMe123! (CHANGE THIS!)"
