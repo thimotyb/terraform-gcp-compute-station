@@ -235,8 +235,12 @@ wget -q https://github.com/git-ecosystem/git-credential-manager/releases/downloa
 # Install GCM
 apt-get install -y /tmp/gcm-linux.deb
 
-# Configure Git to use GCM globally
-git-credential-manager configure
+# Configure Git to use GCM globally (non-interactive)
+if HOME=/root git-credential-manager configure; then
+  echo "Git Credential Manager configured successfully"
+else
+  echo "Warning: Git Credential Manager configure step failed (continuing)" >&2
+fi
 
 # Clean up
 rm /tmp/gcm-linux.deb
