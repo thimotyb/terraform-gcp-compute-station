@@ -41,10 +41,10 @@ The VM creation takes ~5-10 minutes. The startup script installs all software au
 
 ```bash
 # Follow the installation logs in real-time
-gcloud compute ssh ubuntu-workstation --zone=europe-west4-a --project=cegeka-gcp-awareness --command="sudo tail -f /var/log/startup-script.log"
+gcloud compute ssh ubuntu-workstation --zone=europe-west1-c --project=cegeka-gcp-awareness --command="sudo tail -f /var/log/startup-script.log"
 
 # Check if the startup script has completed
-gcloud compute ssh ubuntu-workstation --zone=europe-west4-a --project=cegeka-gcp-awareness --command="ls -l /var/log/startup-script-complete"
+gcloud compute ssh ubuntu-workstation --zone=europe-west1-c --project=cegeka-gcp-awareness --command="ls -l /var/log/startup-script-complete"
 ```
 
 When you see the file `/var/log/startup-script-complete`, the installation is complete and you can connect via RDP.
@@ -79,7 +79,7 @@ terraform output rdp_connection_info
 # Create IAP tunnel
 gcloud compute start-iap-tunnel ubuntu-workstation 3389 \
   --local-host-port=localhost:3389 \
-  --zone=europe-west4-a \
+  --zone=europe-west1-c \
   --project=cegeka-gcp-awareness
 
 # Then connect via Remote Desktop to: localhost:3389
@@ -116,10 +116,10 @@ Connect via SSH to run commands or troubleshoot:
 
 ```bash
 # SSH to the instance
-gcloud compute ssh ubuntu-workstation --zone=europe-west4-a --project=cegeka-gcp-awareness
+gcloud compute ssh ubuntu-workstation --zone=europe-west1-c --project=cegeka-gcp-awareness
 
 # SSH with specific user
-gcloud compute ssh ubuntu@ubuntu-workstation --zone=europe-west4-a --project=cegeka-gcp-awareness
+gcloud compute ssh ubuntu@ubuntu-workstation --zone=europe-west1-c --project=cegeka-gcp-awareness
 ```
 
 **Note:** OS Login is enabled, so gcloud will use your Google identity for SSH authentication.
@@ -130,26 +130,26 @@ gcloud compute ssh ubuntu@ubuntu-workstation --zone=europe-west4-a --project=ceg
 
 ```bash
 # Upload a single file
-gcloud compute scp /path/to/your/file.zip ubuntu-workstation:/home/ubuntu/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+gcloud compute scp /path/to/your/file.zip ubuntu-workstation:/home/ubuntu/ --zone=europe-west1-c --project=cegeka-gcp-awareness
 
 # Upload with specific user
-gcloud compute scp /path/to/your/file.zip ubuntu@ubuntu-workstation:/home/ubuntu/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+gcloud compute scp /path/to/your/file.zip ubuntu@ubuntu-workstation:/home/ubuntu/ --zone=europe-west1-c --project=cegeka-gcp-awareness
 
 # Upload entire folder (recursive)
-gcloud compute scp --recurse /path/to/folder ubuntu-workstation:/home/ubuntu/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+gcloud compute scp --recurse /path/to/folder ubuntu-workstation:/home/ubuntu/ --zone=europe-west1-c --project=cegeka-gcp-awareness
 
 # Upload multiple files
-gcloud compute scp /path/to/*.zip ubuntu-workstation:/home/ubuntu/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+gcloud compute scp /path/to/*.zip ubuntu-workstation:/home/ubuntu/ --zone=europe-west1-c --project=cegeka-gcp-awareness
 ```
 
 ### Download files from the VM
 
 ```bash
 # Download a file from VM to local machine
-gcloud compute scp ubuntu-workstation:/home/ubuntu/file.zip /local/path/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+gcloud compute scp ubuntu-workstation:/home/ubuntu/file.zip /local/path/ --zone=europe-west1-c --project=cegeka-gcp-awareness
 
 # Download folder recursively
-gcloud compute scp --recurse ubuntu-workstation:/home/ubuntu/folder /local/path/ --zone=europe-west4-a --project=cegeka-gcp-awareness
+gcloud compute scp --recurse ubuntu-workstation:/home/ubuntu/folder /local/path/ --zone=europe-west1-c --project=cegeka-gcp-awareness
 ```
 
 ## 🔧 Post-Installation Steps
@@ -307,7 +307,7 @@ sudo apt upgrade -y
 - **4 vCPUs**
 - **32 GB RAM**
 - **400 GB SSD** (pd-standard)
-- Region: europe-west4
+- Region: europe-west1
 
 ### Alternative Machine Types:
 
@@ -376,7 +376,7 @@ resource "google_compute_firewall" "allow_rdp" {
 Already enabled via metadata. Use gcloud SSH instead of password auth:
 
 ```bash
-gcloud compute ssh ubuntu-workstation --zone=europe-west4-a
+gcloud compute ssh ubuntu-workstation --zone=europe-west1-c
 ```
 
 ### 4. Enable Automatic Updates
@@ -452,13 +452,13 @@ sudo tail -f /var/log/xrdp-sesman.log
 
 2. **Check XRDP status**:
    ```bash
-   gcloud compute ssh ubuntu-workstation --zone=europe-west4-a
+   gcloud compute ssh ubuntu-workstation --zone=europe-west1-c
    sudo systemctl status xrdp
    ```
 
 3. **Check startup script completed**:
    ```bash
-   gcloud compute ssh ubuntu-workstation --zone=europe-west4-a
+   gcloud compute ssh ubuntu-workstation --zone=europe-west1-c
    cat /var/log/startup-script.log | grep "Setup Complete"
    ```
 
@@ -478,7 +478,7 @@ sudo tail -f /var/log/xrdp-sesman.log
 
 3. **Test connection**:
    ```bash
-   gcloud compute ssh ubuntu-workstation --zone=europe-west4-a --tunnel-through-iap
+   gcloud compute ssh ubuntu-workstation --zone=europe-west1-c --tunnel-through-iap
    ```
 
 ### Docker not working
@@ -506,7 +506,7 @@ sudo tail -f /var/log/xrdp-sesman.log
 
 2. **If still not working**, SSH into the VM and restart XRDP:
    ```bash
-   gcloud compute ssh ubuntu-workstation --zone=europe-west4-a --project=cegeka-gcp-awareness
+   gcloud compute ssh ubuntu-workstation --zone=europe-west1-c --project=cegeka-gcp-awareness
    sudo systemctl restart xrdp
    ```
 

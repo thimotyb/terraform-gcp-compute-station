@@ -1,1 +1,1 @@
-gcloud compute instances stop ubuntu-workstation --zone=europe-west4-a
+gcloud compute instances stop ubuntu-workstation --zone=europe-west1-c

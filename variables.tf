@@ -31,7 +31,7 @@ variable "machine_type" {
 variable "gcp_zone" {
   type        = string
   description = "The zone where the compute instance will be created"
-  default     = "europe-west4-a"
+  default     = "europe-west1-c"
 }
 
 variable "disk_size_gb" {

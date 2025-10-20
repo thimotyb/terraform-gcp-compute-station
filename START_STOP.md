@@ -3,19 +3,19 @@
 ## 🚀 Start the VM
 
 ```bash
-gcloud compute instances start ubuntu-workstation --zone=europe-west4-a
+gcloud compute instances start ubuntu-workstation --zone=europe-west1-c
 ```
 
 ## 🛑 Stop the VM
 
 ```bash
-gcloud compute instances stop ubuntu-workstation --zone=europe-west4-a
+gcloud compute instances stop ubuntu-workstation --zone=europe-west1-c
 ```
 
 ## 📊 Check VM Status
 
 ```bash
-gcloud compute instances describe ubuntu-workstation --zone=europe-west4-a --format="get(status)"
+gcloud compute instances describe ubuntu-workstation --zone=europe-west1-c --format="get(status)"
 ```
 
 Possible statuses: `RUNNING`, `TERMINATED`, `STOPPING`, `PROVISIONING`
@@ -29,7 +29,7 @@ gcloud compute instances list
 ## 🔄 Restart the VM
 
 ```bash
-gcloud compute instances reset ubuntu-workstation --zone=europe-west4-a
+gcloud compute instances reset ubuntu-workstation --zone=europe-west1-c
 ```
 
 ## ⏰ Auto Shutdown
@@ -51,7 +51,7 @@ The VM only charges when it's **RUNNING**. When stopped, you only pay for disk s
 
 ```bash
 gcloud compute instances describe ubuntu-workstation \
-  --zone=europe-west4-a \
+  --zone=europe-west1-c \
   --format="get(networkInterfaces[0].accessConfigs[0].natIP)"
 ```
 
@@ -59,7 +59,7 @@ gcloud compute instances describe ubuntu-workstation \
 
 1. **Start the VM:**
    ```bash
-   gcloud compute instances start ubuntu-workstation --zone=europe-west4-a
+   gcloud compute instances start ubuntu-workstation --zone=europe-west1-c
    ```
 
 2. **Wait ~30 seconds** for it to boot
@@ -67,7 +67,7 @@ gcloud compute instances describe ubuntu-workstation \
 3. **Get the IP:**
    ```bash
    gcloud compute instances describe ubuntu-workstation \
-     --zone=europe-west4-a \
+     --zone=europe-west1-c \
      --format="get(networkInterfaces[0].accessConfigs[0].natIP)"
    ```
 
@@ -81,7 +81,7 @@ gcloud compute instances describe ubuntu-workstation \
 # Create tunnel
 gcloud compute start-iap-tunnel ubuntu-workstation 3389 \
   --local-host-port=localhost:3389 \
-  --zone=europe-west4-a
+  --zone=europe-west1-c
 
 # Then connect via Remote Desktop to: localhost:3389
 ```
