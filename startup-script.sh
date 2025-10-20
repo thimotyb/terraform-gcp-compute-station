@@ -137,6 +137,30 @@ sed -i 's/allowed_users=console/allowed_users=anybody/g' /etc/X11/Xwrapper.confi
 echo "XRDP installed and configured successfully"
 
 #######################################
+# Install Google Chrome & VS Code
+#######################################
+echo "Installing Google Chrome and Visual Studio Code..."
+
+install -m 0755 -d /usr/share/keyrings
+
+# Google Chrome repository
+curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | \
+  gpg --dearmor -o /usr/share/keyrings/google-linux.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/google-linux.gpg] \
+  http://dl.google.com/linux/chrome/deb/ stable main" \
+  > /etc/apt/sources.list.d/google-chrome.list
+
+# Visual Studio Code repository
+curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | \
+  gpg --dearmor -o /usr/share/keyrings/packages.microsoft.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/packages.microsoft.gpg] \
+  https://packages.microsoft.com/repos/code stable main" \
+  > /etc/apt/sources.list.d/vscode.list
+
+apt-get update
+apt-get install -y google-chrome-stable code
+
+#######################################
 # Configure Firewall (UFW)
 #######################################
 echo "Configuring firewall..."
@@ -200,39 +224,6 @@ apt-get install -y \
     zip
 
 #######################################
-# Install Google Chrome
-#######################################
-echo "Installing Google Chrome..."
-
-# Download Chrome
-wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O /tmp/google-chrome-stable_current_amd64.deb
-
-# Install Chrome
-apt-get install -y /tmp/google-chrome-stable_current_amd64.deb
-
-# Clean up
-rm /tmp/google-chrome-stable_current_amd64.deb
-
-echo "Google Chrome installed successfully"
-
-#######################################
-# Install Visual Studio Code
-#######################################
-echo "Installing Visual Studio Code..."
-
-# Add Microsoft GPG key
-wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/packages.microsoft.gpg
-
-# Add VS Code repository
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list
-
-# Update and install VS Code
-apt-get update
-apt-get install -y code
-
-echo "Visual Studio Code installed successfully"
-
-#######################################
 # Install Git Credential Manager
 #######################################
 echo "Installing Git Credential Manager..."
@@ -288,6 +279,31 @@ export NVM_DIR="/usr/local/nvm"
 nvm install --lts
 nvm use --lts
 nvm alias default 'lts/*'
+
+# Expose Node.js binaries system-wide
+CURRENT_NODE="$(nvm current)"
+NVM_BIN="${NVM_DIR}/versions/node/${CURRENT_NODE}/bin"
+
+ln -sf "${NVM_BIN}/node" /usr/local/bin/node
+ln -sf "${NVM_BIN}/npm" /usr/local/bin/npm
+ln -sf "${NVM_BIN}/npx" /usr/local/bin/npx
+
+# Provide an executable wrapper for nvm so the command is always available
+cat > /usr/local/bin/nvm <<'EOF'
+#!/usr/bin/env bash
+export NVM_DIR="/usr/local/nvm"
+if [ -s "${NVM_DIR}/nvm.sh" ]; then
+  # shellcheck source=/dev/null
+  . "${NVM_DIR}/nvm.sh"
+  nvm "$@"
+else
+  echo "nvm shim: /usr/local/nvm/nvm.sh not found" >&2
+  exit 1
+fi
+EOF
+
+chmod +x /usr/local/bin/nvm
+chmod -R a+rx /usr/local/nvm
 
 # Make NVM available to all users
 cat >> /etc/profile.d/nvm.sh <<'EOF'
@@ -375,6 +391,124 @@ npm install -g @anthropic-ai/claude-code
 
 # Verify installation
 claude --version || echo "Claude CLI installed, version check failed (may need API key setup)"
+
+# Ensure Claude CLI is on the global PATH
+if [[ -x "${NVM_BIN}/claude" ]]; then
+  ln -sf "${NVM_BIN}/claude" /usr/local/bin/claude
+fi
+
+#######################################
+# Configure XFCE Panel Launchers
+#######################################
+echo "Setting up XFCE panel launchers for Chrome and VS Code..."
+
+cat > /usr/local/bin/configure-xfce-panel.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+SENTINEL="${HOME}/.config/.panel-configured"
+
+if [[ -f "${SENTINEL}" ]]; then
+  exit 0
+fi
+
+if ! command -v xfconf-query >/dev/null 2>&1; then
+  exit 0
+fi
+
+mkdir -p "$(dirname "${SENTINEL}")"
+
+PANEL_PROP="/panels/panel-1/plugin-ids"
+GLOBAL_PROP="/plugins/plugin-ids"
+
+readarray -t PANEL_IDS < <(xfconf-query -c xfce4-panel -p "${PANEL_PROP}" 2>/dev/null || true)
+readarray -t GLOBAL_IDS < <(xfconf-query -c xfce4-panel -p "${GLOBAL_PROP}" 2>/dev/null || true)
+
+contains_id() {
+  local id=$1
+  shift
+  local item
+  for item in "$@"; do
+    if [[ "${item}" == "${id}" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+write_uint_array() {
+  local property=$1
+  shift
+  local -a values=("$@")
+  local -a args=()
+  local value
+  for value in "${values[@]}"; do
+    args+=(-t uint -s "${value}")
+  done
+  if ((${#args[@]})); then
+    xfconf-query -c xfce4-panel -p "${property}" "${args[@]}"
+  fi
+}
+
+add_launcher() {
+  local plugin_id=$1
+  shift
+  local -a items=("$@")
+
+  if ! contains_id "${plugin_id}" "${PANEL_IDS[@]}"; then
+    PANEL_IDS+=("${plugin_id}")
+  fi
+
+  if ! contains_id "${plugin_id}" "${GLOBAL_IDS[@]}"; then
+    GLOBAL_IDS+=("${plugin_id}")
+  fi
+
+  if ! xfconf-query -c xfce4-panel -p "/plugins/plugin-${plugin_id}" -s launcher -t string >/dev/null 2>&1; then
+    xfconf-query -c xfce4-panel -p "/plugins/plugin-${plugin_id}" -n -t string -s launcher >/dev/null 2>&1 || true
+  fi
+
+  xfconf-query -c xfce4-panel -p "/plugins/plugin-${plugin_id}/items" --reset >/dev/null 2>&1 || true
+
+  local -a item_args=()
+  local item
+  for item in "${items[@]}"; do
+    item_args+=(-t string -s "${item}")
+  done
+
+  if ((${#item_args[@]})); then
+    xfconf-query -c xfce4-panel -p "/plugins/plugin-${plugin_id}/items" -n "${item_args[@]}" >/dev/null 2>&1 || \
+      xfconf-query -c xfce4-panel -p "/plugins/plugin-${plugin_id}/items" "${item_args[@]}"
+  fi
+}
+
+add_launcher 200 google-chrome.desktop
+add_launcher 201 code.desktop
+
+write_uint_array "${PANEL_PROP}" "${PANEL_IDS[@]}"
+write_uint_array "${GLOBAL_PROP}" "${GLOBAL_IDS[@]}"
+
+xfce4-panel --restart >/dev/null 2>&1 || true
+
+touch "${SENTINEL}"
+rm -f "${HOME}/.config/autostart/configure-xfce-panel.desktop"
+EOF
+
+chmod +x /usr/local/bin/configure-xfce-panel.sh
+
+for target in /etc/skel /home/ubuntu; do
+  mkdir -p "${target}/.config/autostart"
+  cat > "${target}/.config/autostart/configure-xfce-panel.desktop" <<'EOF'
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Configure XFCE Panel
+Exec=/usr/local/bin/configure-xfce-panel.sh
+OnlyShowIn=XFCE;
+X-GNOME-Autostart-enabled=true
+EOF
+done
+
+chown -R ubuntu:ubuntu /home/ubuntu/.config
 
 echo "Claude CLI installed successfully"
 
