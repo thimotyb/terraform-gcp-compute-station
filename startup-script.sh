@@ -425,6 +425,19 @@ if [[ -x "${NVM_BIN}/claude" ]]; then
 fi
 
 #######################################
+# Install Codex CLI
+#######################################
+echo "Installing Codex CLI..."
+
+npm install -g @openai/codex
+
+if [[ -x "${NVM_BIN}/codex" ]]; then
+  ln -sf "${NVM_BIN}/codex" /usr/local/bin/codex
+fi
+
+codex --version || echo "Warning: Codex CLI installation may have failed" >&2
+
+#######################################
 # Configure XFCE Panel Launchers
 #######################################
 echo "Setting up XFCE panel launchers for Chrome and VS Code..."
@@ -570,6 +583,7 @@ echo "- SDKMAN: $(source /usr/local/sdkman/bin/sdkman-init.sh && sdk version)"
 echo "- Claude CLI: $(source /usr/local/nvm/nvm.sh && claude --version 2>/dev/null || echo 'installed')"
 echo "- kubectl: $(kubectl version --client --short || echo 'installed')"
 echo "- Minikube: $(minikube version)"
+echo "- Codex CLI: $(codex --version 2>/dev/null || echo 'installed via npm')"
 echo ""
 echo "Default user: ubuntu"
 echo "Default password: ChangeMe123! (CHANGE THIS!)"
