@@ -2,6 +2,14 @@
 # Stop the workstation VM, snapshot its boot disk, and delete the instance to avoid disk charges.
 set -euo pipefail
 
+# Get directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Source common configuration (suppress errors if not found, use defaults)
+if [[ -f "${SCRIPT_DIR}/config.sh" ]]; then
+  source "${SCRIPT_DIR}/config.sh"
+fi
+
 INSTANCE="${INSTANCE_NAME:-ubuntu-workstation}"
 ZONE="${GCP_ZONE:-europe-west1-c}"
 PROJECT="${GCP_PROJECT:-}"
