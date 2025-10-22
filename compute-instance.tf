@@ -85,6 +85,23 @@ resource "google_compute_firewall" "allow_iap" {
   target_tags   = ["iap-ssh"]
 }
 
+# Firewall rule for IAP Desktop RDP access
+# Required for IAP Desktop to discover and connect to RDP servers
+resource "google_compute_firewall" "allow_iap_rdp_server" {
+  name    = "allow-iap-rdp-server"
+  network = "default"
+  project = var.gcp_project
+
+  allow {
+    protocol = "tcp"
+    ports    = ["3389"]
+  }
+
+  # IAP's IP range
+  source_ranges = ["35.235.240.0/20"]
+  target_tags   = ["rdp-server"]
+}
+
 # IAM binding to allow IAP tunnel access
 # Note: This requires iam.serviceAccounts permissions
 # If you get permission errors, add this role manually via GCP Console:
