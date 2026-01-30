@@ -33,8 +33,8 @@ variable "user_email" {
   description = "User email for IAP tunnel access"
 }
 
-variable "startup_script_path" {
+variable "startup_script_content" {
   type        = string
-  description = "Path to the startup script file"
-  default     = "startup-script.sh"
+  description = "The content of the startup script. If not provided, the default internal script will be used."
+  default     = null
 }

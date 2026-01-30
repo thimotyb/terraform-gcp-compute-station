@@ -24,7 +24,7 @@ resource "google_compute_instance" "ubuntu_workstation" {
     enable-oslogin = "TRUE"
   }
 
-  metadata_startup_script = file("${path.root}/${var.startup_script_path}")
+  metadata_startup_script = var.startup_script_content != null ? var.startup_script_content : file("${path.module}/startup-script.sh")
 
   allow_stopping_for_update = true
 
