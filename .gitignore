@@ -30,3 +30,4 @@ override.tf.json
 
 # Ignore GCP credential files
 cegeka-*.json
+cegeka-gcp-awareness*.json
