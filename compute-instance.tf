@@ -53,20 +53,20 @@ resource "google_compute_instance" "ubuntu_workstation" {
   }
 }
 
-# Firewall rule for RDP access
-resource "google_compute_firewall" "allow_rdp" {
-  name    = "allow-rdp-workstation"
+# Firewall rule for public SSH and RDP access
+resource "google_compute_firewall" "allow_public_ssh_rdp" {
+  name    = "allow-public-ssh-rdp"
   network = "default"
   project = var.gcp_project
 
   allow {
     protocol = "tcp"
-    ports    = ["3389"]
+    ports    = ["22", "3389"]
   }
 
-  # Allow RDP from anywhere (or restrict to your IP range)
+  # Allow from anywhere
   source_ranges = ["0.0.0.0/0"]
-  target_tags   = ["rdp-server"]
+  target_tags   = ["rdp-server", "iap-ssh"]
 }
 
 # Firewall rule for IAP SSH/RDP tunneling
